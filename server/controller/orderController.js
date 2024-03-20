@@ -1,7 +1,7 @@
 const Order = require('../models/OrdersModel');
 const jwt = require('jsonwebtoken');
 const Products = require('../models/ProductsModel');
-const secret = process.env.SECRET;
+const secret = process.env.SECRET
 
 const addOrder = async (req, res) => {
     const { quantity } = req.body;
@@ -53,26 +53,44 @@ const addOrder = async (req, res) => {
         })
     }
 }
-
+// const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphbXJ1ZCIsInBhc3N3b3JkIjoiMTIzNDU2NyIsInVzZXJJZCI6MiwiaWF0IjoxNzEwOTE1MjkzfQ.xyl4ckSRGyt0_ZtVhxzmqobMOlaOPaPbe9dyhSmkJxg'
 const getOrders = async (req, res) => {
     try {
-        jwt.verify(req.cookies.token, secret, async (err, decoded) => {
+        const { token } = req.cookies;
+        if (!token) {
+            return res.status(400).json({
+                success: false,
+                message: "Please login first - not token",
+            });
+        }
+
+        jwt.verify(token, secret, async (err, decoded) => {
+            if (err) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Please login first",
+                });
+            }
+
             const orders = await Order.findAll({ where: { userId: decoded.userId } });
+            const productName = await Products.findOne({ where: { id: orders[0].productId } });
             res.status(200).json({
                 success: true,
                 message: "Orders fetched successfully",
                 total: orders.length,
+                name: productName.name,
                 orders
-            })
-        })
+            });
+        });
     } catch (error) {
         res.status(500).json({
             success: false,
             message: "Something went wrong",
             error
-        })
+        });
     }
-}
+};
+
 
 const editOrder = async (req, res) => {
     const { isProcessed } = req.body;

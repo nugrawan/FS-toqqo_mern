@@ -1,30 +1,37 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const cookieparser = require('cookie-parser');
+const cookieParser = require('cookie-parser'); // Corrected typo
 const db = require('./config/db');
 const dotenv = require('dotenv').config();
-const port = process.env.PORT;
-const userValidation = require('./middleware/userValidation')
+const port = process.env.PORT || 3000; // Set a default port if PORT is not defined
+const userValidation = require('./middleware/userValidation');
 
-app.use(cors())
+app.use(cookieParser({ signed: true }, { httpOnly: true }));
+app.use(cors({ credentials: true, origin: 'http://localhost:3000', methods: ['GET', 'POST', 'PUT', 'DELETE'] }));
+
 app.use(express.json());
-app.use(cookieparser());
 
-app.use('/api/products', userValidation, require('./routes/productRouter'))
-app.use('/api/order', userValidation, require('./routes/orderRouter'))
-app.use('/api/user', require('./routes/userRouter'))
+// Routes
+app.use('/api/products', userValidation, require('./routes/productRouter'));
+app.use('/api/order', require('./routes/orderRouter'));
+app.use('/api/user', require('./routes/userRouter'));
 
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something went wrong!');
+});
 
-const connectToDatabse = async () => {
+const connectToDatabase = async () => {
     try {
         await db.authenticate();
         console.log('Database connected');
     } catch (error) {
         console.error('Unable to connect to the database:', error);
     }
-}
-connectToDatabse();
+};
+connectToDatabase();
+
 app.listen(port, () => {
-    console.log(`Running on port ${port}`)
-})
+    console.log(`Server is running on port ${port}`);
+});

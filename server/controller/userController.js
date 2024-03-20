@@ -96,27 +96,27 @@ const login = async (req, res) => {
             message: "Incorrect password"
         });
     }
-    jwt.sign({ username, password, userId: user.userId }, secret, {}, async (err, token) => {
-        try {
+    try {
+        jwt.sign({ username, password, userId: user.userId }, secret, {}, async (err, token) => {
+            await res.cookie('token', token, {})
             if (err) {
-                res.status(400).json({
+                return res.status(400).json({
                     success: false,
                     message: "Failed to login",
                 })
             }
-            await res.cookie('token', token, { httpOnly: true })
-            res.status(200).json({
+            return res.status(200).json({
                 success: true,
                 message: "Login success",
             });
-        } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: "Something went wrong",
-                error
-            })
-        }
-    });
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Something went wrong",
+            error
+        })
+    }
 }
 
 const resetPassword = async (req, res) => {
