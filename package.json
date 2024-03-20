@@ -6,15 +6,15 @@
   "scripts": {
     "install": "cd client && npm install && cd ../server && npm install",
     "server": "cd server && nodemon server.js",
-    "start-server": "cd server && node server.js",
     "client": "cd client && npm start",
+    "start-server": "cd server && node server.js",
+    "build": "cd client && npm run build",
     "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
-    "start": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
+    "start": "concurrently --kill-others-on-fail \"npm run start-server\" \"npm run build\""
   },
   "author": "Nugrawan",
   "license": "ISC",
   "dependencies": {
-    "concurrently": "^8.2.2",
-    "moment": "^2.30.1"
+    "concurrently": "^8.2.2"
   }
 }

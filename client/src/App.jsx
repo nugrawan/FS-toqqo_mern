@@ -7,7 +7,7 @@ import ChangePassword from './pages/ChangePassword';
 import { useCookies } from 'react-cookie';
 import ErrorPage from 'pages/ErrorPage';
 function App() {
-    const [cookies, setCookie] = useCookies();
+    const [cookies] = useCookies();
 
     return (
         <Router>

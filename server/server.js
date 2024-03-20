@@ -1,10 +1,10 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const cookieParser = require('cookie-parser'); // Corrected typo
+const cookieParser = require('cookie-parser');
 const db = require('./config/db');
 const dotenv = require('dotenv').config();
-const port = process.env.PORT || 3000; // Set a default port if PORT is not defined
+const port = process.env.SERVER_PORT || 3000;
 const userValidation = require('./middleware/userValidation');
 
 app.use(cookieParser({ signed: true }, { httpOnly: true }));
